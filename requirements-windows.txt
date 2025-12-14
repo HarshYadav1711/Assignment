@@ -1,0 +1,44 @@
+# Windows-optimized requirements file
+# Install in this order to avoid build issues
+
+# Core Flask dependencies
+flask==3.0.0
+flask-cors==4.0.0
+flask-sqlalchemy==3.1.1
+
+# Database
+pymysql==1.1.0
+cryptography==41.0.7
+
+# AI/ML - Install these carefully
+openai==1.3.0
+google-generativeai==0.3.0
+
+# Content extraction
+youtube-transcript-api==0.6.1
+PyPDF2==3.0.1
+pypdf==3.17.0
+
+# Scientific computing - Install numpy first, then faiss
+# numpy>=1.24.3,<2.0.0  # Install separately: pip install "numpy>=1.24.3,<2.0.0"
+# faiss-cpu>=1.9.0      # Install separately: pip install faiss-cpu
+
+# Image processing - Install with pre-built wheel
+# Pillow>=10.0.0         # Install separately: pip install Pillow --only-binary :all:
+
+# Utilities
+python-dotenv==1.0.0
+requests==2.31.0
+gunicorn==21.2.0
+
+# Media processing
+moviepy==1.0.3
+pydub==0.25.1
+
+# Note: For Windows, install Pillow, numpy, and faiss-cpu separately:
+# 1. pip install --upgrade pip setuptools wheel
+# 2. pip install Pillow --only-binary :all:
+# 3. pip install "numpy>=1.24.3,<2.0.0"
+# 4. pip install faiss-cpu
+# 5. pip install -r requirements-windows.txt
+

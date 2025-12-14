@@ -1,0 +1,108 @@
+.audio-dialogue-panel {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.card-description {
+  color: #a0a0a0;
+  margin-bottom: 20px;
+  line-height: 1.6;
+}
+
+.topic-input-section {
+  display: flex;
+  gap: 10px;
+}
+
+.dialogue-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #16213e;
+}
+
+.dialogue-header h3 {
+  color: #fff;
+  font-size: 20px;
+}
+
+.dialogue-turns {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.dialogue-turn {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #16213e;
+}
+
+.dialogue-turn.teacher {
+  background: #16213e;
+  border-left: 4px solid #533483;
+}
+
+.dialogue-turn.student {
+  background: #0f0f23;
+  border-left: 4px solid #8b5cf6;
+}
+
+.turn-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.speaker-badge {
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+}
+
+.play-audio-btn {
+  padding: 6px 12px;
+  background: #533483;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  transition: all 0.2s ease;
+}
+
+.play-audio-btn:hover {
+  background: #8b5cf6;
+}
+
+.turn-message {
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+
+.dialogue-controls {
+  display: flex;
+  justify-content: center;
+  padding-top: 16px;
+  border-top: 1px solid #16213e;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #a0a0a0;
+}
+
+.loading-state p {
+  margin-top: 16px;
+}
+
