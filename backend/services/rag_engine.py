@@ -150,7 +150,12 @@ class RAGEngine:
                 logger.error(f"Failed to ingest video {video_url}: {e}")
         
         if not all_chunks:
-            raise ValueError("No content was successfully ingested")
+            logger.warning("No content was successfully ingested. RAG engine will be initialized but search will return empty results.")
+            # Initialize with empty chunks to prevent errors
+            self.chunks = []
+            self.index = None
+            self.is_initialized = True
+            return
         
         self.chunks = all_chunks
         logger.info(f"Total chunks: {len(self.chunks)}")
@@ -183,29 +188,39 @@ class RAGEngine:
             List of relevant chunks with similarity scores
         """
         if not self.is_initialized:
-            raise ValueError("RAG engine not initialized. Call initialize() first.")
+            logger.warning("RAG engine not initialized")
+            return []
         
-        # Generate query embedding
-        query_embedding = self.llm_service.generate_embeddings([query])[0]
-        query_vector = np.array([query_embedding]).astype('float32')
+        # Check if we have any chunks
+        if not self.chunks or self.index is None:
+            logger.warning("No content available for search")
+            return []
         
-        # Search
-        distances, indices = self.index.search(query_vector, top_k)
-        
-        # Format results
-        results = []
-        for i, idx in enumerate(indices[0]):
-            if idx < len(self.chunks):
-                chunk = self.chunks[idx].copy()
-                # Convert L2 distance to similarity score (lower distance = higher similarity)
-                similarity = 1 / (1 + distances[0][i])
-                chunk['similarity'] = float(similarity)
-                
-                # Filter by similarity threshold
-                if similarity >= Config.SIMILARITY_THRESHOLD:
-                    results.append(chunk)
-        
-        return results
+        try:
+            # Generate query embedding
+            query_embedding = self.llm_service.generate_embeddings([query])[0]
+            query_vector = np.array([query_embedding]).astype('float32')
+            
+            # Search
+            distances, indices = self.index.search(query_vector, top_k)
+            
+            # Format results
+            results = []
+            for i, idx in enumerate(indices[0]):
+                if idx < len(self.chunks):
+                    chunk = self.chunks[idx].copy()
+                    # Convert L2 distance to similarity score (lower distance = higher similarity)
+                    similarity = 1 / (1 + distances[0][i])
+                    chunk['similarity'] = float(similarity)
+                    
+                    # Filter by similarity threshold
+                    if similarity >= Config.SIMILARITY_THRESHOLD:
+                        results.append(chunk)
+            
+            return results
+        except Exception as e:
+            logger.error(f"Error during RAG search: {e}")
+            return []
     
     def save_index(self, filepath='backend/data/rag_index.pkl'):
         """Save the RAG index to disk"""

@@ -15,6 +15,7 @@ from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 import logging
+import uuid
 
 from backend.config import Config
 from backend.services.llm_service import LLMService
@@ -57,10 +58,15 @@ def get_rag_engine():
         rag_engine = RAGEngine()
         if not rag_engine.is_initialized:
             try:
-                rag_engine.initialize()
+                with app.app_context():
+                    rag_engine.initialize()
                 logger.info("RAG engine initialized successfully")
             except Exception as e:
                 logger.error(f"Failed to initialize RAG engine: {e}")
+                # Mark as initialized even if empty to prevent repeated errors
+                rag_engine.is_initialized = True
+                rag_engine.chunks = []
+                rag_engine.index = None
     return rag_engine
 
 def get_audio_service():
@@ -117,11 +123,25 @@ def chat():
         
         # Retrieve relevant context using RAG
         rag = get_rag_engine()
-        context_chunks = rag.search(message, top_k=Config.TOP_K_RESULTS)
+        
+        # Check if RAG is initialized
+        if not rag.is_initialized:
+            return jsonify({
+                'response': "I'm still processing your study materials. Please add some PDFs or YouTube videos in the 'My Materials' tab, then try again in a moment.",
+                'sources': [],
+                'session_id': session_id
+            })
+        
+        # Try to search for relevant context
+        try:
+            context_chunks = rag.search(message, top_k=Config.TOP_K_RESULTS)
+        except Exception as e:
+            logger.warning(f"RAG search error: {e}")
+            context_chunks = []
         
         if not context_chunks:
             return jsonify({
-                'response': "I don't have relevant information about that topic in the provided materials.",
+                'response': "I don't have relevant information about that topic in your study materials. Please make sure you've added PDFs or YouTube videos in the 'My Materials' tab, or try asking about topics covered in your materials.",
                 'sources': [],
                 'session_id': session_id
             })

@@ -42,19 +42,33 @@ function ChatPanel() {
       const aiMessage = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: response.response,
+        content: response.response || response.error || 'No response received',
         sources: response.sources || [],
         mode
       };
       
       setMessages(prev => [...prev, aiMessage]);
-      setSessionId(response.session_id);
+      if (response.session_id) {
+        setSessionId(response.session_id);
+      }
     } catch (error) {
       console.error('Chat error:', error);
+      let errorContent = 'Sorry, I encountered an error. Please try again.';
+      
+      // Provide more helpful error messages
+      if (error.response?.data?.response) {
+        // Use the response from backend (e.g., "no relevant information")
+        errorContent = error.response.data.response;
+      } else if (error.response?.data?.error) {
+        errorContent = error.response.data.error;
+      } else if (error.message) {
+        errorContent = `Error: ${error.message}`;
+      }
+      
       const errorMessage = {
         id: Date.now() + 1,
         role: 'assistant',
-        content: 'Sorry, I encountered an error. Please try again.',
+        content: errorContent,
         sources: [],
         mode
       };
