@@ -3,6 +3,9 @@
  */
 import axios from 'axios';
 
+// API base URL - set REACT_APP_API_URL in environment for production
+// For local dev: http://localhost:5000/api
+// For production: https://your-backend.railway.app/api
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const api = {

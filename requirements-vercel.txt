@@ -1,0 +1,28 @@
+# Vercel serverless function requirements
+# Note: Some packages may need to be removed or replaced for serverless
+
+flask==3.0.0
+flask-cors==4.0.0
+flask-sqlalchemy==3.1.1
+pymysql==1.1.0
+cryptography==41.0.7
+openai==1.3.0
+google-generativeai==0.3.0
+youtube-transcript-api==0.6.1
+PyPDF2==3.0.1
+pypdf==3.17.0
+python-dotenv==1.0.0
+requests==2.31.0
+
+# Note: For Vercel serverless:
+# - Remove faiss-cpu (use Pinecone instead)
+# - Remove moviepy, pydub (use Cloudinary for video)
+# - Remove Pillow if not needed, or use smaller alternative
+# - Database: Use external service (PlanetScale, Supabase)
+
+# For vector search, use Pinecone:
+# pinecone-client>=2.0.0
+
+# For file storage, use Cloudinary:
+# cloudinary>=1.0.0
+
