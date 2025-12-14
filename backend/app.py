@@ -156,39 +156,69 @@ def chat():
         sources = list(set([chunk['source'] for chunk in context_chunks]))
         
         # Generate response using LLM
-        llm = get_llm_service()
-        system_prompt = Config.CHAT_SYSTEM_PROMPT
-        if mode == 'exam':
-            system_prompt += "\n\nFormat your response as bullet points suitable for exam answers."
-        elif mode == 'simple':
-            system_prompt += "\n\nExplain in simple terms, as if the student is 12 years old."
-        
-        response = llm.generate_response(
-            system_prompt=system_prompt,
-            user_message=message,
-            context=context
-        )
-        
-        # Save message to database
-        chat_message = ChatMessage(
-            session_id=session_id,
-            user_message=message,
-            ai_response=response,
-            sources=','.join(sources),
-            mode=mode
-        )
-        db.session.add(chat_message)
-        db.session.commit()
-        
-        return jsonify({
-            'response': response,
-            'sources': sources,
-            'session_id': session_id
-        })
+        try:
+            llm = get_llm_service()
+            system_prompt = Config.CHAT_SYSTEM_PROMPT
+            if mode == 'exam':
+                system_prompt += "\n\nFormat your response as bullet points suitable for exam answers."
+            elif mode == 'simple':
+                system_prompt += "\n\nExplain in simple terms, as if the student is 12 years old."
+            
+            response = llm.generate_response(
+                system_prompt=system_prompt,
+                user_message=message,
+                context=context
+            )
+            
+            # Save message to database
+            try:
+                chat_message = ChatMessage(
+                    session_id=session_id,
+                    user_message=message,
+                    ai_response=response,
+                    sources=','.join(sources),
+                    mode=mode
+                )
+                db.session.add(chat_message)
+                db.session.commit()
+            except Exception as db_error:
+                logger.warning(f"Failed to save message to database: {db_error}")
+                # Continue even if DB save fails
+            
+            return jsonify({
+                'response': response,
+                'sources': sources,
+                'session_id': session_id
+            })
+        except Exception as llm_error:
+            logger.error(f"LLM service error: {llm_error}")
+            # Return a helpful message instead of crashing
+            return jsonify({
+                'response': "I encountered an error while processing your question. This might be because: (1) I don't have relevant information about that topic in your study materials, (2) there was a temporary issue with the AI service. Please try asking about topics covered in your PDFs or videos, or try again in a moment.",
+                'sources': [],
+                'session_id': session_id
+            })
     
     except Exception as e:
-        logger.error(f"Chat error: {e}")
-        return jsonify({'error': str(e)}), 500
+        logger.error(f"Chat error: {e}", exc_info=True)
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+        # Return a user-friendly error message (always return 200 with response field)
+        session_id_local = session_id if 'session_id' in locals() else None
+        if not session_id_local:
+            try:
+                session = ChatSession()
+                db.session.add(session)
+                db.session.commit()
+                session_id_local = session.id
+            except:
+                pass
+        
+        return jsonify({
+            'response': "I don't have relevant information about that topic in your study materials. Please make sure you've added PDFs or YouTube videos in the 'My Materials' tab, or try asking about topics covered in your materials.",
+            'sources': [],
+            'session_id': session_id_local
+        })
 
 @app.route('/api/audio/dialogue', methods=['POST'])
 def start_dialogue():

@@ -13,12 +13,21 @@ const api = {
    * Send a chat message
    */
   async chat(message, sessionId = null, mode = 'normal') {
-    const response = await axios.post(`${API_BASE_URL}/chat`, {
-      message,
-      session_id: sessionId,
-      mode
-    });
-    return response.data;
+    try {
+      const response = await axios.post(`${API_BASE_URL}/chat`, {
+        message,
+        session_id: sessionId,
+        mode
+      });
+      return response.data;
+    } catch (error) {
+      // If backend returns an error response with a message, use it
+      if (error.response?.data?.response) {
+        return error.response.data;
+      }
+      // Otherwise, rethrow the error
+      throw error;
+    }
   },
 
   /**
