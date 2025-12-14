@@ -2,7 +2,7 @@
 
 ## System Overview
 
-The AI Study Tool is a full-stack application built with Flask (backend) and React (frontend), designed to provide an interactive learning experience for economics students using RAG (Retrieval Augmented Generation) and LLM technologies.
+The AI Study Tool is a full-stack application built with Flask (backend) and React (frontend), designed to provide an interactive learning experience for students studying any subject or domain using RAG (Retrieval Augmented Generation) and LLM technologies. Users provide their own study materials (PDFs, videos), and the tool creates a personalized knowledge base.
 
 ## Architecture Layers
 

@@ -100,7 +100,7 @@ function AudioDialoguePanel() {
       <div className="card">
         <h2 className="card-title">🎙️ Two-Person Audio Dialogue</h2>
         <p className="card-description">
-          Start a conversation between a teacher and student about any economics topic.
+          Start a conversation between a teacher and student about any topic from your study materials.
           The AI will generate natural dialogue with distinct voices.
         </p>
 
@@ -110,7 +110,7 @@ function AudioDialoguePanel() {
             className="input"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Enter a topic (e.g., 'supply and demand', 'market equilibrium')"
+            placeholder="Enter a topic from your study materials (e.g., 'photosynthesis', 'quantum mechanics', 'Shakespeare')"
             disabled={loading || dialogue}
             onKeyPress={(e) => e.key === 'Enter' && startDialogue()}
           />
@@ -127,7 +127,7 @@ function AudioDialoguePanel() {
       {dialogue && (
         <div className="card">
           <div className="dialogue-header">
-            <h3>Dialogue: {topic || 'Economics Discussion'}</h3>
+            <h3>Dialogue: {topic || 'Study Discussion'}</h3>
             <button className="btn btn-secondary" onClick={stopDialogue}>
               <FaStop /> Stop
             </button>

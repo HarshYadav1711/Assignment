@@ -79,22 +79,27 @@ The frontend will open at `http://localhost:3000`
 
 ## 🎯 First Use
 
-1. **Wait for RAG initialization**: The backend will automatically ingest the PDF and YouTube videos on first start (this may take 1-2 minutes)
+1. **Configure your study materials** (see `CONTENT_SETUP.md`):
+   - Add PDF URLs to `.env`: `PDF_URLS=url1,url2`
+   - Add YouTube video URLs: `YOUTUBE_VIDEOS=url1,url2`
+   - Works with any subject: Math, Science, History, Literature, etc.
+
+2. **Wait for RAG initialization**: The backend will automatically ingest your PDFs and YouTube videos on first start (this may take 1-2 minutes)
 
 2. **Try the Chat**:
    - Go to the Chat tab
-   - Ask: "What is supply and demand?"
+   - Ask questions about your study materials
    - See source citations below the answer
 
 3. **Try Audio Dialogue**:
    - Go to Audio Dialogue tab
-   - Enter a topic: "market equilibrium"
+   - Enter a topic from your materials
    - Click "Start Dialogue"
    - Listen to the teacher-student conversation
 
 4. **Generate a Video**:
    - Go to Video Summaries tab
-   - Enter a topic: "inflation"
+   - Enter a topic from your study materials
    - Select video type
    - Click "Generate Video"
 
@@ -121,8 +126,9 @@ The frontend will open at `http://localhost:3000`
 
 ## 📝 Next Steps
 
+- **Set up your study materials**: See `CONTENT_SETUP.md` for detailed instructions
 - Read `ARCHITECTURE.md` for system design details
 - Check `README.md` for full documentation
-- Customize prompts in `backend/config.py`
-- Add more content sources by editing `backend/config.py`
+- Customize prompts in `backend/config.py` (optional)
+- Add more content sources via environment variables
 

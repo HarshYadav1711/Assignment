@@ -2,7 +2,7 @@
 
 ## ✅ What Was Built
 
-A complete, production-ready interactive AI study platform with the following features:
+A complete, production-ready interactive AI study platform that works with **any subject or domain**. Students provide their own study materials (PDFs, videos), and the tool creates a personalized learning experience with the following features:
 
 ### Core Features Implemented
 

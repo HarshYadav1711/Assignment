@@ -6,7 +6,7 @@ function Header() {
     <header className="header">
       <div className="header-content">
         <h1>🔥 AI Study Tool</h1>
-        <p className="subtitle">Interactive Economics Learning Platform</p>
+        <p className="subtitle">Interactive Learning Platform for Any Subject</p>
       </div>
     </header>
   );

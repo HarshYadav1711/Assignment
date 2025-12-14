@@ -178,7 +178,7 @@ def start_dialogue():
     """
     try:
         data = request.json
-        topic = data.get('topic', 'general economics concepts')
+        topic = data.get('topic', 'general concepts')
         session_id = data.get('session_id')
         
         # Get context for topic

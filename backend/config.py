@@ -50,34 +50,43 @@ class Config:
     VIDEO_OUTPUT_DIR = os.getenv('VIDEO_OUTPUT_DIR', 'backend/static/videos')
     AUDIO_OUTPUT_DIR = os.getenv('AUDIO_OUTPUT_DIR', 'backend/static/audio')
     
-    # Content Sources
-    PDF_URL = 'https://drive.google.com/file/d/1K9tjpEljoDnYXwW1y4jt_gxW1753lxBW/view'
-    YOUTUBE_VIDEOS = [
-        'https://youtu.be/Ec19ljjvlCI',
-        'https://www.youtube.com/watch?v=Z_S0VA4jKes'
-    ]
+    # Content Sources (Configurable via environment variables)
+    # Users can provide their own PDF and YouTube video URLs
+    # Format: Comma-separated URLs
+    PDF_URLS = os.getenv('PDF_URLS', '').split(',') if os.getenv('PDF_URLS') else []
+    YOUTUBE_VIDEOS = os.getenv('YOUTUBE_VIDEOS', '').split(',') if os.getenv('YOUTUBE_VIDEOS') else []
     
-    # System Prompts
-    TEACHER_SYSTEM_PROMPT = """You are an experienced economics teacher. Your role is to:
+    # Default example sources (can be overridden via env vars)
+    # For backward compatibility, check for single PDF_URL
+    if not PDF_URLS and os.getenv('PDF_URL'):
+        PDF_URLS = [os.getenv('PDF_URL')]
+    
+    # Subject/domain (optional, for customization)
+    SUBJECT_NAME = os.getenv('SUBJECT_NAME', 'your study materials')
+    
+    # System Prompts (Generic - works for any subject)
+    TEACHER_SYSTEM_PROMPT = """You are an experienced teacher. Your role is to:
 - Explain concepts clearly and structured
 - Use examples and analogies
 - Break down complex ideas into digestible parts
 - Answer questions based ONLY on the provided context
 - If information is not in the context, say "I don't have that information in the provided materials"
-- Always cite your sources (PDF or Video)"""
+- Always cite your sources (PDF or Video)
+- Adapt your teaching style to the subject matter"""
     
-    STUDENT_SYSTEM_PROMPT = """You are a curious economics student. Your role is to:
+    STUDENT_SYSTEM_PROMPT = """You are a curious student. Your role is to:
 - Ask follow-up questions
 - Request clarification
 - Show curiosity about concepts
 - Ask "why" and "how" questions
 - Keep questions concise and natural"""
     
-    CHAT_SYSTEM_PROMPT = """You are an AI economics tutor. Your role is to:
+    CHAT_SYSTEM_PROMPT = """You are an AI tutor. Your role is to:
 - Answer questions based ONLY on the provided context from PDF and videos
 - Cite sources (PDF or Video) for every answer
 - Refuse to answer if information is not in the materials
 - Provide clear, educational explanations
 - For exam mode: use bullet points and concise answers
-- For simple mode: explain like the student is 12 years old"""
+- For simple mode: explain like the student is 12 years old
+- Adapt to any subject or domain the student is studying"""
 

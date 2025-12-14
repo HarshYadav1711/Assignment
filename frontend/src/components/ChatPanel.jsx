@@ -101,13 +101,13 @@ function ChatPanel() {
         {messages.length === 0 && (
           <div className="welcome-message">
             <h2>Welcome to AI Study Tool!</h2>
-            <p>Ask me anything about the economics chapter. I'm grounded in the PDF and video materials.</p>
+            <p>Ask me anything about your study materials. I'm grounded in the PDF and video content you've provided.</p>
             <div className="example-questions">
               <p className="example-title">Try asking:</p>
               <ul>
-                <li>"What is supply and demand?"</li>
-                <li>"Explain market equilibrium"</li>
-                <li>"What are the key exam points about inflation?"</li>
+                <li>"What is [key concept]?"</li>
+                <li>"Explain [topic]"</li>
+                <li>"What are the key exam points about [subject]?"</li>
               </ul>
             </div>
           </div>
@@ -153,7 +153,7 @@ function ChatPanel() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder="Ask a question about economics..."
+          placeholder="Ask a question about your study materials..."
           disabled={loading}
         />
         <button

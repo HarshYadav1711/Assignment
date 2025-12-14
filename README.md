@@ -1,14 +1,15 @@
-# 🔥 Interactive AI Study Tool - Economics Chapter
+# 🔥 Interactive AI Study Tool - Universal Learning Platform
 
-A production-ready interactive study platform inspired by NotebookLLM, featuring AI-powered Q&A, two-person audio dialogue, and video summaries.
+A production-ready interactive study platform inspired by NotebookLLM, featuring AI-powered Q&A, two-person audio dialogue, and video summaries. Works with **any subject or domain** - just provide your own study materials!
 
 ## 🎯 Features
 
-- **Interactive Q&A**: Context-aware chat grounded in PDF and YouTube video content
+- **Interactive Q&A**: Context-aware chat grounded in your PDF and YouTube video content
 - **Audio Dialogue Mode**: Two-person conversation simulation (Teacher ↔ Student) with TTS
 - **Video Summaries**: AI-generated explainer videos for concepts and exam tips
 - **Source Citations**: Every answer cites its source (PDF/Video)
 - **Exam Mode**: Toggle for bullet-pointed, exam-oriented responses
+- **Universal Support**: Works with any subject - Math, Science, History, Literature, Programming, etc.
 
 ## 🏗️ Architecture
 
@@ -53,9 +54,6 @@ python setup.py
 
 #### Backend Setup
 
-#### Windows Users (Important!)
-If you encounter Pillow or faiss-cpu installation errors, see `QUICK_FIX_WINDOWS.md` first!
-
 ```bash
 # Create virtual environment
 python -m venv venv
@@ -78,10 +76,6 @@ python backend/scripts/setup_db.py
 
 # Start Flask server (from project root)
 python run_backend.py
-
-# Or alternatively:
-cd backend
-python -m flask run
 ```
 
 #### Frontend Setup
@@ -101,28 +95,57 @@ Create a `.env` file in the root directory with:
 ```env
 OPENAI_API_KEY=your_key_here
 DATABASE_URL=mysql+pymysql://user:password@localhost/study_tool
+
+# Your study materials (see CONTENT_SETUP.md)
+PDF_URLS=https://drive.google.com/file/d/YOUR_PDF_ID/view
+YOUTUBE_VIDEOS=https://youtu.be/VIDEO_ID_1,https://youtu.be/VIDEO_ID_2
 ```
 
 See `.env.example` for all available options.
 
 ## 📚 Content Sources
 
-The AI is grounded in:
-1. Economics Chapter PDF (Google Drive)
-2. YouTube Video 1: https://youtu.be/Ec19ljjvlCI
-3. YouTube Video 2: https://www.youtube.com/watch?v=Z_S0VA4jKes
+The AI is grounded in **your own study materials**. Configure via environment variables:
+
+### Setting Up Your Content
+
+1. **PDF Documents**: Add PDF URLs to `.env`:
+   ```env
+   PDF_URLS=https://drive.google.com/file/d/YOUR_PDF_ID/view,https://another-pdf-url.com/file.pdf
+   ```
+
+2. **YouTube Videos**: Add video URLs to `.env`:
+   ```env
+   YOUTUBE_VIDEOS=https://youtu.be/VIDEO_ID_1,https://www.youtube.com/watch?v=VIDEO_ID_2
+   ```
+
+3. **Optional - Subject Name** (for customization):
+   ```env
+   SUBJECT_NAME=Physics
+   ```
+
+The tool works with **any subject**: Math, Science, History, Literature, Programming, etc. Just provide your own materials!
+
+**See `CONTENT_SETUP.md` for detailed instructions.**
 
 ## 🧠 Design Decisions
+
+### Universal Subject Support
+- **Configurable Content**: Users provide their own PDFs and videos via environment variables
+- **Generic Prompts**: System prompts work for any subject or domain
+- **Flexible RAG**: Adapts to any type of educational content
 
 ### RAG Pipeline
 - **Chunking Strategy**: Semantic chunking with overlap to preserve context
 - **Embeddings**: OpenAI `text-embedding-3-small` for cost efficiency
 - **Vector Store**: In-memory FAISS for MVP, easily swappable to Pinecone/Weaviate
+- **Multi-Source Support**: Handles multiple PDFs and videos simultaneously
 
 ### LLM Service
 - **Model**: GPT-4 Turbo for quality, with fallback to GPT-3.5
 - **Prompt Engineering**: Strict system prompts to prevent hallucination
 - **Context Window**: 8K tokens for comprehensive context
+- **Subject-Agnostic**: Works with any domain or field of study
 
 ### Audio Dialogue
 - **TTS**: OpenAI TTS API with distinct voice profiles
@@ -136,11 +159,12 @@ The AI is grounded in:
 
 ## 🔧 Configuration
 
-Edit `backend/config.py` to:
+Edit `backend/config.py` or `.env` file to:
 - Switch LLM providers (OpenAI ↔ Gemini)
 - Adjust chunk sizes and overlap
 - Configure TTS voices
 - Set database connection
+- **Add your own study materials** (PDFs and videos)
 
 ## 📦 Production Deployment
 
@@ -150,15 +174,18 @@ Edit `backend/config.py` to:
 4. Build frontend: `npm run build`
 5. Serve with Gunicorn: `gunicorn -w 4 app:app`
 
+See `DEPLOY_RAILWAY.md` for Railway deployment guide.
+
 ## 🎓 Future Enhancements
 
-- Multi-chapter support
-- User authentication
-- Progress tracking
+- Multi-chapter/subject support with organization
+- User authentication and personal study libraries
+- Progress tracking across subjects
 - Collaborative study rooms
 - Mobile app
+- Direct file upload (beyond URLs)
+- Support for more content types (docx, pptx, etc.)
 
 ## 📝 License
 
 MIT License - Built for internship evaluation
-

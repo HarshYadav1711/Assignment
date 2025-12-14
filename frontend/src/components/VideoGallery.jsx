@@ -47,7 +47,7 @@ function VideoGallery() {
       <div className="card">
         <h2 className="card-title">🎥 AI Video Summaries</h2>
         <p className="card-description">
-          Generate short explainer videos for economics concepts, exam tips, or definitions.
+          Generate short explainer videos for any concepts, exam tips, or definitions from your study materials.
         </p>
 
         <div className="video-generator">
@@ -57,7 +57,7 @@ function VideoGallery() {
               className="input"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Enter a topic (e.g., 'supply and demand', 'inflation')"
+              placeholder="Enter a topic from your study materials (e.g., 'photosynthesis', 'derivatives', 'World War II')"
               disabled={generating}
               onKeyPress={(e) => e.key === 'Enter' && generateVideo()}
             />
@@ -110,7 +110,7 @@ function VideoGallery() {
           {summaries.map((summary) => (
             <div key={summary.id} className="video-card">
               <div className="video-card-header">
-                <h3>{summary.topic || 'Economics Topic'}</h3>
+                <h3>{summary.topic || 'Study Topic'}</h3>
                 <span className="video-type-badge">{summary.type || 'concept'}</span>
               </div>
               <div className="video-card-content">

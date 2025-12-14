@@ -31,28 +31,39 @@ class RAGEngine:
         
         all_chunks = []
         
-        # Ingest PDF
-        try:
-            logger.info("Ingesting PDF...")
-            pdf_pages = extract_pdf_from_url(Config.PDF_URL)
-            for page in pdf_pages:
-                page_chunks = chunk_with_metadata(
-                    page['text'],
-                    source='PDF',
-                    metadata={'page': page['page']},
-                    chunk_size=Config.CHUNK_SIZE,
-                    chunk_overlap=Config.CHUNK_OVERLAP
-                )
-                all_chunks.extend(page_chunks)
-            logger.info(f"Ingested {len(pdf_pages)} PDF pages")
-        except Exception as e:
-            logger.error(f"Failed to ingest PDF: {e}")
+        # Ingest PDFs (support multiple PDFs)
+        pdf_urls = Config.PDF_URLS if hasattr(Config, 'PDF_URLS') and Config.PDF_URLS else []
+        if not pdf_urls and hasattr(Config, 'PDF_URL') and Config.PDF_URL:
+            # Backward compatibility
+            pdf_urls = [Config.PDF_URL]
+        
+        for pdf_url in pdf_urls:
+            if not pdf_url or not pdf_url.strip():
+                continue
+            try:
+                logger.info(f"Ingesting PDF: {pdf_url}")
+                pdf_pages = extract_pdf_from_url(pdf_url.strip())
+                for page in pdf_pages:
+                    page_chunks = chunk_with_metadata(
+                        page['text'],
+                        source=f'PDF: {pdf_url[:50]}...',
+                        metadata={'page': page['page'], 'pdf_url': pdf_url},
+                        chunk_size=Config.CHUNK_SIZE,
+                        chunk_overlap=Config.CHUNK_OVERLAP
+                    )
+                    all_chunks.extend(page_chunks)
+                logger.info(f"Ingested {len(pdf_pages)} pages from PDF")
+            except Exception as e:
+                logger.error(f"Failed to ingest PDF {pdf_url}: {e}")
         
         # Ingest YouTube videos
-        for video_url in Config.YOUTUBE_VIDEOS:
+        video_urls = Config.YOUTUBE_VIDEOS if hasattr(Config, 'YOUTUBE_VIDEOS') and Config.YOUTUBE_VIDEOS else []
+        for video_url in video_urls:
+            if not video_url or not video_url.strip():
+                continue
             try:
                 logger.info(f"Ingesting video: {video_url}")
-                transcript, video_id = get_transcript(video_url)
+                transcript, video_id = get_transcript(video_url.strip())
                 transcript_text = format_transcript_as_text(transcript)
                 
                 video_chunks = chunk_with_metadata(
