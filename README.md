@@ -76,9 +76,12 @@ cp .env.example .env  # On Windows: copy .env.example .env
 # Set up database
 python backend/scripts/setup_db.py
 
-# Start Flask server
+# Start Flask server (from project root)
+python run_backend.py
+
+# Or alternatively:
 cd backend
-python app.py
+python -m flask run
 ```
 
 #### Frontend Setup

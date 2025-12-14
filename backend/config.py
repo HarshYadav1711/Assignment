@@ -17,8 +17,10 @@ class Config:
     # Database
     DATABASE_URL = os.getenv(
         'DATABASE_URL',
-        'mysql+pymysql://root:password@localhost/study_tool'
+        'sqlite:///study_tool.db'
     )
+    # SQLAlchemy expects SQLALCHEMY_DATABASE_URI
+    SQLALCHEMY_DATABASE_URI = DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     
     # LLM Provider (openai or gemini)

@@ -1,0 +1,62 @@
+# ============================================
+# AI Study Tool - Environment Configuration
+# ============================================
+# Copy this content to .env file
+# On Windows: copy env_template.txt .env
+# On Linux/Mac: cp env_template.txt .env
+
+# ============================================
+# Flask Configuration
+# ============================================
+SECRET_KEY=dev-secret-key-change-in-production
+FLASK_DEBUG=True
+
+# ============================================
+# Database Configuration
+# ============================================
+# Using SQLite for easy development setup
+# Change to MySQL for production:
+# DATABASE_URL=mysql+pymysql://root:password@localhost/study_tool
+DATABASE_URL=sqlite:///study_tool.db
+
+# ============================================
+# LLM Provider Configuration
+# ============================================
+LLM_PROVIDER=openai
+
+# ============================================
+# OpenAI Configuration
+# ============================================
+# IMPORTANT: Add your OpenAI API key here
+# Get it from: https://platform.openai.com/api-keys
+OPENAI_API_KEY=sk-your-openai-api-key-here
+OPENAI_MODEL=gpt-4-turbo-preview
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+
+# ============================================
+# Gemini Configuration (optional)
+# ============================================
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-pro
+
+# ============================================
+# RAG Settings
+# ============================================
+CHUNK_SIZE=1000
+CHUNK_OVERLAP=200
+TOP_K_RESULTS=5
+SIMILARITY_THRESHOLD=0.7
+
+# ============================================
+# Audio/TTS Configuration
+# ============================================
+TTS_PROVIDER=openai
+TEACHER_VOICE=alloy
+STUDENT_VOICE=nova
+
+# ============================================
+# Media Output Directories
+# ============================================
+VIDEO_OUTPUT_DIR=backend/static/videos
+AUDIO_OUTPUT_DIR=backend/static/audio
+

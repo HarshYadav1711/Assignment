@@ -16,14 +16,31 @@ cd ..
 
 ### Step 2: Configure Environment
 
-1. Copy `.env.example` to `.env`
-2. Add your OpenAI API key:
+1. **Copy `.env.example` to `.env`**:
+   ```bash
+   # On Windows:
+   copy .env.example .env
+   
+   # On Linux/Mac:
+   cp .env.example .env
+   
+   # Or use the helper script:
+   python create_env.py
+   ```
+
+2. **Edit `.env` and add your OpenAI API key**:
    ```
    OPENAI_API_KEY=sk-your-key-here
    ```
-3. Configure database (or use SQLite for testing):
+   Get your API key from: https://platform.openai.com/api-keys
+
+3. **Database is already configured for SQLite** (good for development):
    ```
    DATABASE_URL=sqlite:///study_tool.db
+   ```
+   For MySQL, change to:
+   ```
+   DATABASE_URL=mysql+pymysql://username:password@localhost/study_tool
    ```
 
 ### Step 3: Initialize Database
@@ -34,9 +51,17 @@ python backend/scripts/setup_db.py
 
 ### Step 4: Start Backend
 
+**Option 1: Run from project root (Recommended)**
+```bash
+# From project root directory
+python run_backend.py
+```
+
+**Option 2: Run from backend directory**
 ```bash
 cd backend
-python app.py
+python -m flask run
+# Or: python app.py (if imports are fixed)
 ```
 
 The backend will start on `http://localhost:5000`

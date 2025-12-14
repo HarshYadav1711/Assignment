@@ -2,10 +2,18 @@
 Main Flask application for the AI Study Tool.
 Provides REST API endpoints for chat, audio, video, and content ingestion.
 """
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path
+project_root = Path(__file__).parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
-import os
 import logging
 
 from backend.config import Config
@@ -22,6 +30,9 @@ logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
 app.config.from_object(Config)
+# Ensure SQLALCHEMY_DATABASE_URI is set
+if not app.config.get('SQLALCHEMY_DATABASE_URI'):
+    app.config['SQLALCHEMY_DATABASE_URI'] = Config.SQLALCHEMY_DATABASE_URI
 CORS(app)
 
 # Initialize database
