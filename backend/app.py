@@ -84,6 +84,25 @@ def get_video_service():
 # Create tables
 with app.app_context():
     db.create_all()
+    # Create upload directories
+    os.makedirs('backend/static/uploads/pdfs', exist_ok=True)
+
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint - API information"""
+    return jsonify({
+        'message': 'AI Study Tool API',
+        'status': 'running',
+        'version': '1.0.0',
+        'endpoints': {
+            'health': '/api/health',
+            'chat': '/api/chat',
+            'content_sources': '/api/content/sources',
+            'audio_dialogue': '/api/audio/dialogue',
+            'video_summaries': '/api/video/summaries'
+        },
+        'docs': 'This is the backend API. The frontend should be deployed separately.'
+    })
 
 @app.route('/api/health', methods=['GET'])
 def health_check():
