@@ -105,28 +105,30 @@ See `.env.example` for all available options.
 
 ## 📚 Content Sources
 
-The AI is grounded in **your own study materials**. Configure via environment variables:
+The AI is grounded in **your own study materials**. Add them directly through the app - **no coding required!**
 
-### Setting Up Your Content
+### Easy Setup (Recommended)
 
-1. **PDF Documents**: Add PDF URLs to `.env`:
-   ```env
-   PDF_URLS=https://drive.google.com/file/d/YOUR_PDF_ID/view,https://another-pdf-url.com/file.pdf
-   ```
+1. **Start the app** (frontend and backend)
+2. **Go to "My Materials" tab**
+3. **Click "Add Content"**
+4. **Choose your method**:
+   - 📄 **Upload PDF**: Drag & drop or click to select
+   - 🔗 **PDF URL**: Paste a Google Drive or direct PDF link
+   - ▶️ **YouTube Video**: Paste any YouTube video URL
 
-2. **YouTube Videos**: Add video URLs to `.env`:
-   ```env
-   YOUTUBE_VIDEOS=https://youtu.be/VIDEO_ID_1,https://www.youtube.com/watch?v=VIDEO_ID_2
-   ```
+5. **That's it!** The system processes your materials automatically
 
-3. **Optional - Subject Name** (for customization):
-   ```env
-   SUBJECT_NAME=Physics
-   ```
+### Advanced Setup (Optional)
 
-The tool works with **any subject**: Math, Science, History, Literature, Programming, etc. Just provide your own materials!
+You can also configure via environment variables in `.env`:
+```env
+PDF_URLS=https://drive.google.com/file/d/YOUR_PDF_ID/view
+YOUTUBE_VIDEOS=https://youtu.be/VIDEO_ID_1
+SUBJECT_NAME=Physics
+```
 
-**See `CONTENT_SETUP.md` for detailed instructions.**
+The tool works with **any subject**: Math, Science, History, Literature, Programming, etc. Just add your materials through the UI!
 
 ## 🧠 Design Decisions
 

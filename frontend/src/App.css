@@ -12,6 +12,7 @@
   background: #1a1a2e;
   border-bottom: 1px solid #16213e;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .tab-button {

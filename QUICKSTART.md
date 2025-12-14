@@ -79,12 +79,13 @@ The frontend will open at `http://localhost:3000`
 
 ## 🎯 First Use
 
-1. **Configure your study materials** (see `CONTENT_SETUP.md`):
-   - Add PDF URLs to `.env`: `PDF_URLS=url1,url2`
-   - Add YouTube video URLs: `YOUTUBE_VIDEOS=url1,url2`
+1. **Add your study materials** (No coding needed!):
+   - Go to the **"My Materials"** tab in the app
+   - Click **"Add Content"**
+   - Upload PDFs directly or add YouTube video URLs
    - Works with any subject: Math, Science, History, Literature, etc.
 
-2. **Wait for RAG initialization**: The backend will automatically ingest your PDFs and YouTube videos on first start (this may take 1-2 minutes)
+2. **Wait for processing**: The system will automatically process your materials (this may take 1-2 minutes)
 
 2. **Try the Chat**:
    - Go to the Chat tab

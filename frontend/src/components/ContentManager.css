@@ -1,0 +1,282 @@
+.content-manager {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.card-header {
+  margin-bottom: 24px;
+}
+
+.card-description {
+  color: #a0a0a0;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alert-error {
+  background: #3a1f1f;
+  border: 1px solid #5a2f2f;
+  color: #ff6b6b;
+}
+
+.alert-success {
+  background: #1f3a1f;
+  border: 1px solid #2f5a2f;
+  color: #6bff6b;
+}
+
+.sources-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #16213e;
+}
+
+.sources-header h3 {
+  color: #fff;
+  font-size: 20px;
+  margin: 0;
+}
+
+.add-source-form {
+  background: #16213e;
+  border: 1px solid #0f3460;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.form-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #0f3460;
+}
+
+.form-tabs .tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #a0a0a0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.form-tabs .tab:hover {
+  color: #e0e0e0;
+}
+
+.form-tabs .tab.active {
+  color: #8b5cf6;
+  border-bottom-color: #8b5cf6;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  color: #fff;
+  font-weight: 500;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group small {
+  color: #a0a0a0;
+  font-size: 12px;
+}
+
+.file-upload-area {
+  position: relative;
+}
+
+.file-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.file-upload-label {
+  display: block;
+  padding: 40px 20px;
+  background: #0f0f23;
+  border: 2px dashed #533483;
+  border-radius: 8px;
+  text-align: center;
+  color: #a0a0a0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.file-upload-label:hover {
+  background: #16213e;
+  border-color: #8b5cf6;
+  color: #e0e0e0;
+}
+
+.file-upload-label span {
+  font-size: 16px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 24px;
+}
+
+.sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.source-item {
+  display: flex;
+  align-items: start;
+  gap: 16px;
+  padding: 20px;
+  background: #16213e;
+  border: 1px solid #0f3460;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.source-item:hover {
+  border-color: #533483;
+  transform: translateY(-2px);
+}
+
+.source-icon {
+  font-size: 24px;
+  color: #8b5cf6;
+  flex-shrink: 0;
+}
+
+.source-info {
+  flex: 1;
+}
+
+.source-info h4 {
+  color: #fff;
+  font-size: 18px;
+  margin: 0 0 8px 0;
+}
+
+.source-type {
+  color: #8b5cf6;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 4px 0;
+}
+
+.source-description {
+  color: #a0a0a0;
+  font-size: 14px;
+  margin: 8px 0;
+}
+
+.source-url {
+  color: #666;
+  font-size: 12px;
+  font-family: monospace;
+  word-break: break-all;
+  margin-top: 8px;
+}
+
+.btn-icon {
+  padding: 8px;
+  background: transparent;
+  border: 1px solid #5a2f2f;
+  border-radius: 6px;
+  color: #ff6b6b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn-icon:hover {
+  background: #3a1f1f;
+  border-color: #ff6b6b;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #a0a0a0;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 40px;
+  color: #a0a0a0;
+}
+
+.loading-state p {
+  margin-top: 16px;
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .sources-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .form-tabs {
+    flex-direction: column;
+  }
+
+  .form-tabs .tab {
+    justify-content: center;
+  }
+
+  .source-item {
+    flex-direction: column;
+  }
+
+  .btn-icon {
+    align-self: flex-end;
+  }
+}
+

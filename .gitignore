@@ -38,6 +38,7 @@ yarn-error.log*
 backend/uploads/
 backend/static/videos/
 backend/static/audio/
+backend/static/uploads/
 
 # Logs
 *.log

@@ -53,8 +53,21 @@ def extract_text_from_pdf(pdf_file):
 def extract_pdf_from_url(url):
     """
     Download and extract text from PDF URL.
+    Supports Google Drive and direct PDF URLs.
     Returns: list of page texts
     """
-    pdf_file = download_pdf_from_gdrive(url)
-    return extract_text_from_pdf(pdf_file)
+    try:
+        # Try Google Drive first
+        if 'drive.google.com' in url:
+            pdf_file = download_pdf_from_gdrive(url)
+        else:
+            # Direct PDF URL
+            response = requests.get(url, allow_redirects=True, timeout=30)
+            response.raise_for_status()
+            pdf_file = io.BytesIO(response.content)
+        
+        return extract_text_from_pdf(pdf_file)
+    except Exception as e:
+        logger.error(f"Failed to extract PDF from URL: {e}")
+        raise
 

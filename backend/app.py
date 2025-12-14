@@ -23,6 +23,7 @@ from backend.services.audio_service import AudioService
 from backend.services.video_service import VideoService
 from backend.models import db
 from backend.models.chat import ChatSession, ChatMessage
+from backend.models.content import ContentSource
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -371,6 +372,187 @@ def get_session_messages(session_id):
         })
     except Exception as e:
         logger.error(f"Get messages error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/content/sources', methods=['GET'])
+def list_content_sources():
+    """List all content sources"""
+    try:
+        sources = ContentSource.query.filter_by(is_active=True).order_by(ContentSource.created_at.desc()).all()
+        return jsonify({
+            'sources': [s.to_dict() for s in sources]
+        })
+    except Exception as e:
+        logger.error(f"List content sources error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/content/sources', methods=['POST'])
+def add_content_source():
+    """
+    Add a new content source (PDF URL, YouTube URL, or PDF file upload).
+    Supports both JSON and form-data for file uploads.
+    """
+    try:
+        # Handle file upload (multipart/form-data)
+        if 'file' in request.files:
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({'error': 'No file selected'}), 400
+            
+            if not file.filename.lower().endswith('.pdf'):
+                return jsonify({'error': 'Only PDF files are supported'}), 400
+            
+            # Save uploaded file
+            upload_dir = os.path.join('backend', 'static', 'uploads', 'pdfs')
+            os.makedirs(upload_dir, exist_ok=True)
+            
+            filename = f"{uuid.uuid4()}_{file.filename}"
+            file_path = os.path.join(upload_dir, filename)
+            file.save(file_path)
+            
+            source = ContentSource(
+                source_type='pdf_file',
+                file_path=file_path,
+                title=request.form.get('title', file.filename),
+                description=request.form.get('description', '')
+            )
+        else:
+            # Handle URL-based sources (JSON)
+            data = request.json
+            source_type = data.get('type') or data.get('source_type')
+            
+            if not source_type:
+                return jsonify({'error': 'Source type is required'}), 400
+            
+            if source_type not in ['pdf_url', 'youtube']:
+                return jsonify({'error': f'Invalid source type: {source_type}'}), 400
+            
+            url = data.get('url') or data.get('source_url')
+            if not url:
+                return jsonify({'error': 'URL is required'}), 400
+            
+            source = ContentSource(
+                source_type=source_type,
+                source_url=url,
+                title=data.get('title', url),
+                description=data.get('description', '')
+            )
+        
+        db.session.add(source)
+        db.session.commit()
+        
+        # Trigger re-ingestion in background (don't block response)
+        try:
+            rag = get_rag_engine()
+            rag.is_initialized = False
+            # Initialize in background to avoid blocking
+            # Pass app context to background thread
+            import threading
+            def reinitialize_with_context():
+                with app.app_context():
+                    rag.initialize()
+            threading.Thread(target=reinitialize_with_context, daemon=True).start()
+        except Exception as e:
+            logger.warning(f"Failed to trigger re-ingestion: {e}")
+        
+        return jsonify({
+            'message': 'Content source added successfully. Processing in background...',
+            'source': source.to_dict()
+        })
+    
+    except Exception as e:
+        logger.error(f"Add content source error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/content/sources/<source_id>', methods=['DELETE'])
+def delete_content_source(source_id):
+    """Delete or deactivate a content source"""
+    try:
+        source = ContentSource.query.get(source_id)
+        if not source:
+            return jsonify({'error': 'Source not found'}), 404
+        
+        # Soft delete (deactivate)
+        source.is_active = False
+        db.session.commit()
+        
+        # Trigger re-ingestion in background
+        try:
+            rag = get_rag_engine()
+            rag.is_initialized = False
+            import threading
+            def reinitialize_with_context():
+                with app.app_context():
+                    rag.initialize()
+            threading.Thread(target=reinitialize_with_context, daemon=True).start()
+        except Exception as e:
+            logger.warning(f"Failed to trigger re-ingestion: {e}")
+        
+        return jsonify({'message': 'Content source deleted successfully'})
+    
+    except Exception as e:
+        logger.error(f"Delete content source error: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/content/upload', methods=['POST'])
+def upload_pdf():
+    """Upload a PDF file directly"""
+    try:
+        if 'file' not in request.files:
+            return jsonify({'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'error': 'No file selected'}), 400
+        
+        if not file.filename.lower().endswith('.pdf'):
+            return jsonify({'error': 'Only PDF files are supported'}), 400
+        
+        # Check file size (50MB limit)
+        file.seek(0, os.SEEK_END)
+        file_size = file.tell()
+        file.seek(0)
+        if file_size > 50 * 1024 * 1024:
+            return jsonify({'error': 'File size must be less than 50MB'}), 400
+        
+        # Save file
+        upload_dir = os.path.join('backend', 'static', 'uploads', 'pdfs')
+        os.makedirs(upload_dir, exist_ok=True)
+        
+        filename = f"{uuid.uuid4()}_{file.filename}"
+        file_path = os.path.join(upload_dir, filename)
+        file.save(file_path)
+        
+        # Create content source record
+        source = ContentSource(
+            source_type='pdf_file',
+            file_path=file_path,
+            title=request.form.get('title', file.filename),
+            description=request.form.get('description', '')
+        )
+        
+        db.session.add(source)
+        db.session.commit()
+        
+        # Trigger re-ingestion in background
+        try:
+            rag = get_rag_engine()
+            rag.is_initialized = False
+            import threading
+            def reinitialize_with_context():
+                with app.app_context():
+                    rag.initialize()
+            threading.Thread(target=reinitialize_with_context, daemon=True).start()
+        except Exception as e:
+            logger.warning(f"Failed to trigger re-ingestion: {e}")
+        
+        return jsonify({
+            'message': 'PDF uploaded successfully. Processing in background...',
+            'source': source.to_dict()
+        })
+    
+    except Exception as e:
+        logger.error(f"Upload PDF error: {e}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':

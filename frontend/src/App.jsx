@@ -3,15 +3,22 @@ import './App.css';
 import ChatPanel from './components/ChatPanel';
 import AudioDialoguePanel from './components/AudioDialoguePanel';
 import VideoGallery from './components/VideoGallery';
+import ContentManager from './components/ContentManager';
 import Header from './components/Header';
 
 function App() {
-  const [activeTab, setActiveTab] = useState('chat');
+  const [activeTab, setActiveTab] = useState('content');
 
   return (
     <div className="App">
       <Header />
       <div className="tab-container">
+        <button
+          className={`tab-button ${activeTab === 'content' ? 'active' : ''}`}
+          onClick={() => setActiveTab('content')}
+        >
+          📚 My Materials
+        </button>
         <button
           className={`tab-button ${activeTab === 'chat' ? 'active' : ''}`}
           onClick={() => setActiveTab('chat')}
@@ -32,6 +39,7 @@ function App() {
         </button>
       </div>
       <div className="content-container">
+        {activeTab === 'content' && <ContentManager />}
         {activeTab === 'chat' && <ChatPanel />}
         {activeTab === 'audio' && <AudioDialoguePanel />}
         {activeTab === 'videos' && <VideoGallery />}

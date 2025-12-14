@@ -9,9 +9,10 @@ import os
 import pickle
 from backend.config import Config
 from backend.services.llm_service import LLMService
-from backend.utils.pdf_extractor import extract_pdf_from_url
+from backend.utils.pdf_extractor import extract_pdf_from_url, extract_text_from_pdf
 from backend.utils.youtube_extractor import get_transcript, format_transcript_as_text
 from backend.utils.text_chunker import chunk_with_metadata
+import io
 
 logger = logging.getLogger(__name__)
 
@@ -31,17 +32,86 @@ class RAGEngine:
         
         all_chunks = []
         
-        # Ingest PDFs (support multiple PDFs)
+        # Import here to avoid circular imports
+        from flask import current_app
+        from backend.models.content import ContentSource
+        
+        # Get content sources from database (user-uploaded)
+        # Note: This requires Flask app context
+        try:
+            db_sources = ContentSource.query.filter_by(is_active=True).all()
+        except Exception as e:
+            logger.warning(f"Could not query database for content sources (may need app context): {e}")
+            db_sources = []
+        
+        # Also check environment variables for backward compatibility
         pdf_urls = Config.PDF_URLS if hasattr(Config, 'PDF_URLS') and Config.PDF_URLS else []
         if not pdf_urls and hasattr(Config, 'PDF_URL') and Config.PDF_URL:
-            # Backward compatibility
             pdf_urls = [Config.PDF_URL]
         
+        video_urls = Config.YOUTUBE_VIDEOS if hasattr(Config, 'YOUTUBE_VIDEOS') and Config.YOUTUBE_VIDEOS else []
+        
+        # Process database sources first (user-uploaded)
+        for source in db_sources:
+            try:
+                if source.source_type == 'pdf_url':
+                    logger.info(f"Ingesting PDF URL: {source.source_url}")
+                    pdf_pages = extract_pdf_from_url(source.source_url)
+                    for page in pdf_pages:
+                        page_chunks = chunk_with_metadata(
+                            page['text'],
+                            source=f'PDF: {source.title or source.source_url[:50]}',
+                            metadata={'page': page['page'], 'source_id': source.id},
+                            chunk_size=Config.CHUNK_SIZE,
+                            chunk_overlap=Config.CHUNK_OVERLAP
+                        )
+                        all_chunks.extend(page_chunks)
+                    logger.info(f"Ingested {len(pdf_pages)} pages from PDF")
+                
+                elif source.source_type == 'pdf_file':
+                    logger.info(f"Ingesting PDF file: {source.file_path}")
+                    if os.path.exists(source.file_path):
+                        with open(source.file_path, 'rb') as f:
+                            pdf_pages = extract_text_from_pdf(io.BytesIO(f.read()))
+                        for page in pdf_pages:
+                            page_chunks = chunk_with_metadata(
+                                page['text'],
+                                source=f'PDF: {source.title or os.path.basename(source.file_path)}',
+                                metadata={'page': page['page'], 'source_id': source.id},
+                                chunk_size=Config.CHUNK_SIZE,
+                                chunk_overlap=Config.CHUNK_OVERLAP
+                            )
+                            all_chunks.extend(page_chunks)
+                        logger.info(f"Ingested {len(pdf_pages)} pages from PDF file")
+                    else:
+                        logger.warning(f"PDF file not found: {source.file_path}")
+                
+                elif source.source_type == 'youtube':
+                    logger.info(f"Ingesting video: {source.source_url}")
+                    transcript, video_id = get_transcript(source.source_url)
+                    transcript_text = format_transcript_as_text(transcript)
+                    
+                    video_chunks = chunk_with_metadata(
+                        transcript_text,
+                        source=f'Video: {source.title or video_id}',
+                        metadata={'video_url': source.source_url, 'video_id': video_id, 'source_id': source.id},
+                        chunk_size=Config.CHUNK_SIZE,
+                        chunk_overlap=Config.CHUNK_OVERLAP
+                    )
+                    all_chunks.extend(video_chunks)
+                    logger.info(f"Ingested video {video_id}: {len(video_chunks)} chunks")
+            except Exception as e:
+                logger.error(f"Failed to ingest source {source.id}: {e}")
+        
+        # Process environment variable sources (backward compatibility)
         for pdf_url in pdf_urls:
             if not pdf_url or not pdf_url.strip():
                 continue
+            # Skip if already in database
+            if any(s.source_type == 'pdf_url' and s.source_url == pdf_url.strip() for s in db_sources):
+                continue
             try:
-                logger.info(f"Ingesting PDF: {pdf_url}")
+                logger.info(f"Ingesting PDF from env: {pdf_url}")
                 pdf_pages = extract_pdf_from_url(pdf_url.strip())
                 for page in pdf_pages:
                     page_chunks = chunk_with_metadata(
@@ -56,13 +126,14 @@ class RAGEngine:
             except Exception as e:
                 logger.error(f"Failed to ingest PDF {pdf_url}: {e}")
         
-        # Ingest YouTube videos
-        video_urls = Config.YOUTUBE_VIDEOS if hasattr(Config, 'YOUTUBE_VIDEOS') and Config.YOUTUBE_VIDEOS else []
         for video_url in video_urls:
             if not video_url or not video_url.strip():
                 continue
+            # Skip if already in database
+            if any(s.source_type == 'youtube' and s.source_url == video_url.strip() for s in db_sources):
+                continue
             try:
-                logger.info(f"Ingesting video: {video_url}")
+                logger.info(f"Ingesting video from env: {video_url}")
                 transcript, video_id = get_transcript(video_url.strip())
                 transcript_text = format_transcript_as_text(transcript)
                 

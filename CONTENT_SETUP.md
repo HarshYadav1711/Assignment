@@ -2,18 +2,37 @@
 
 The AI Study Tool works with **any subject or domain**. You just need to provide your own study materials!
 
-## 🎯 How It Works
+## 🎯 Easy Method (No Coding Required!)
 
-1. **Provide your PDFs and videos** via environment variables
-2. **The tool ingests them** into a knowledge base
-3. **Ask questions** about any topic in your materials
-4. **Get answers** grounded in your specific content
+### Using the Web Interface
 
-## 📝 Configuration
+1. **Start the app** (both frontend and backend)
+2. **Open the "My Materials" tab** (first tab in the interface)
+3. **Click "Add Content"** button
+4. **Choose how to add content**:
+   - **📄 Upload PDF**: Click to select a PDF file from your computer (up to 50MB)
+   - **🔗 PDF URL**: Paste a Google Drive or direct PDF link
+   - **▶️ YouTube Video**: Paste any YouTube video URL
+
+5. **Add details** (optional):
+   - Give it a title (e.g., "Chapter 5 - Physics")
+   - Add a description
+
+6. **Click "Add Source"** - The system processes it automatically!
+
+### Features
+
+- ✅ **Works on any device**: Desktop, tablet, mobile
+- ✅ **Works in any browser**: Chrome, Firefox, Safari, Edge
+- ✅ **No technical knowledge needed**: Just click and upload
+- ✅ **Multiple sources**: Add as many PDFs and videos as you want
+- ✅ **Easy management**: View, organize, and remove sources anytime
+
+## 📝 Advanced Method (Environment Variables)
+
+For advanced users, you can also configure via `.env` file:
 
 ### Step 1: Add PDF Documents
-
-In your `.env` file, add PDF URLs:
 
 ```env
 # Single PDF
@@ -47,14 +66,12 @@ SUBJECT_NAME=Physics
 
 ## 🔄 Re-ingesting Content
 
-After updating your content sources:
+When you add content through the UI, it automatically re-processes everything. 
 
-1. **Update `.env`** with new URLs
-2. **Restart the backend**
-3. **Or trigger re-ingestion** via API:
-   ```bash
-   curl -X POST http://localhost:5000/api/ingest
-   ```
+For manual re-ingestion via API:
+```bash
+curl -X POST http://localhost:5000/api/ingest
+```
 
 ## 📖 Example Configurations
 
