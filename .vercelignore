@@ -1,0 +1,17 @@
+# Ignore backend files (not needed for frontend-only deployment)
+backend/
+api/
+*.py
+requirements*.txt
+Procfile
+railway.json
+*.db
+*.sqlite
+__pycache__/
+*.pyc
+.env
+.env.local
+
+# Keep frontend files
+!frontend/
+
