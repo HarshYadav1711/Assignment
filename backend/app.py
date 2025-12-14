@@ -35,7 +35,14 @@ app.config.from_object(Config)
 # Ensure SQLALCHEMY_DATABASE_URI is set
 if not app.config.get('SQLALCHEMY_DATABASE_URI'):
     app.config['SQLALCHEMY_DATABASE_URI'] = Config.SQLALCHEMY_DATABASE_URI
-CORS(app)
+
+# Configure CORS to allow all origins (for production, specify your frontend domain)
+# Allow credentials and all headers for proper API access
+CORS(app, 
+     origins="*",  # Allow all origins (change to specific domain in production)
+     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"],
+     supports_credentials=True)
 
 # Initialize database
 db.init_app(app)
@@ -113,13 +120,20 @@ def health_check():
         'rag_initialized': rag.is_initialized if rag else False
     })
 
-@app.route('/api/chat', methods=['POST'])
+@app.route('/api/chat', methods=['POST', 'OPTIONS'])
 def chat():
     """
     Chat endpoint for Q&A interactions.
     Expects: { "message": "...", "session_id": "...", "mode": "normal|exam|simple" }
     Returns: { "response": "...", "sources": [...], "session_id": "..." }
     """
+    # Handle OPTIONS preflight request
+    if request.method == 'OPTIONS':
+        response = jsonify({})
+        response.headers.add('Access-Control-Allow-Origin', '*')
+        response.headers.add('Access-Control-Allow-Headers', 'Content-Type')
+        response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS')
+        return response
     try:
         data = request.json
         message = data.get('message', '')
