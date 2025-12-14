@@ -13,9 +13,12 @@ pip install Pillow --only-binary :all:
 
 # Step 3: Install numpy with pre-built wheel (avoids GCC compilation)
 # IMPORTANT: Use --only-binary to avoid "NumPy requires GCC >= 8.4" error
+# Python 3.13 may only have NumPy 2.x wheels available
 pip install numpy --only-binary :all:
-# If that fails, try: pip install numpy==1.26.4 --only-binary :all:
-# Or: pip install numpy==1.24.3 --only-binary :all:
+# If that fails, try NumPy 2.0:
+# pip install "numpy>=2.0.0" --only-binary :all:
+# Or try older version:
+# pip install numpy==1.26.4 --only-binary :all:
 
 # Step 4: Install faiss-cpu
 pip install faiss-cpu
@@ -43,12 +46,26 @@ install_windows.bat
 This means NumPy is trying to build from source. Use pre-built wheels instead:
 
 ```bash
-# Try specific version with pre-built wheel
-pip install numpy==1.26.4 --only-binary :all:
+# For Python 3.13: Try NumPy 2.x (has pre-built wheels)
+pip install "numpy>=2.0.0" --only-binary :all:
 
-# Or try latest compatible version
+# For Python 3.11/3.12: Try latest NumPy
 pip install numpy --only-binary :all:
+
+# Or try specific version
+pip install numpy==1.26.4 --only-binary :all:
 ```
+
+### Error: "Could not find a version that satisfies the requirement numpy<1.27.0"
+
+**You're using Python 3.13!** Python 3.13 may only have NumPy 2.x wheels available.
+
+**Solution**: Install NumPy 2.x instead:
+```bash
+pip install "numpy>=2.0.0" --only-binary :all:
+```
+
+See `PYTHON313_FIX.md` for detailed Python 3.13 instructions.
 
 ### If Pre-built Wheels Don't Work
 

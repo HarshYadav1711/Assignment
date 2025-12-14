@@ -4,6 +4,11 @@ echo AI Study Tool - Windows Installation
 echo ========================================
 echo.
 
+REM Change to script directory
+cd /d "%~dp0"
+echo Working directory: %CD%
+echo.
+
 echo Step 1: Upgrading pip, setuptools, and wheel...
 python -m pip install --upgrade pip setuptools wheel
 if errorlevel 1 (
@@ -30,15 +35,21 @@ if errorlevel 1 (
 echo.
 echo Step 3: Installing numpy (required for faiss)...
 echo Using pre-built wheel to avoid GCC compilation issues...
-pip install "numpy>=1.24.3,<1.27.0" --only-binary :all:
+echo Trying latest NumPy with pre-built wheel...
+pip install numpy --only-binary :all:
 if errorlevel 1 (
-    echo WARNING: Pre-built wheel failed, trying regular install...
-    pip install "numpy>=1.24.3,<1.27.0"
+    echo WARNING: Latest NumPy failed, trying NumPy 2.0...
+    pip install "numpy>=2.0.0" --only-binary :all:
     if errorlevel 1 (
-        echo ERROR: Failed to install numpy
-        echo Try: pip install numpy==1.26.4 --only-binary :all:
-        pause
-        exit /b 1
+        echo WARNING: NumPy 2.0 failed, trying NumPy 1.26.4...
+        pip install numpy==1.26.4 --only-binary :all:
+        if errorlevel 1 (
+            echo ERROR: All pre-built wheel attempts failed
+            echo Your Python version may not have pre-built wheels
+            echo Try using conda: conda install numpy
+            pause
+            exit /b 1
+        )
     )
 )
 
@@ -54,6 +65,13 @@ if errorlevel 1 (
 
 echo.
 echo Step 5: Installing remaining dependencies...
+if not exist "requirements.txt" (
+    echo ERROR: requirements.txt not found in current directory
+    echo Current directory: %CD%
+    echo Please run this script from the project root directory
+    pause
+    exit /b 1
+)
 pip install -r requirements.txt
 if errorlevel 1 (
     echo WARNING: Some packages failed to install

@@ -1,8 +1,14 @@
 # AI Study Tool - Windows PowerShell Installation Script
 
+# Change to script directory
+$scriptPath = Split-Path -Parent $MyInvocation.MyCommand.Path
+Set-Location $scriptPath
+
 Write-Host "========================================" -ForegroundColor Cyan
 Write-Host "AI Study Tool - Windows Installation" -ForegroundColor Cyan
 Write-Host "========================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Working directory: $PWD" -ForegroundColor Gray
 Write-Host ""
 
 # Step 1: Upgrade pip
@@ -32,15 +38,24 @@ if ($LASTEXITCODE -ne 0) {
 # Step 3: Install numpy with pre-built wheel
 Write-Host ""
 Write-Host "Step 3: Installing numpy (using pre-built wheel)..." -ForegroundColor Yellow
-pip install "numpy>=1.24.3,<1.27.0" --only-binary :all:
+Write-Host "Note: Python 3.13 may only have NumPy 2.x wheels available" -ForegroundColor Cyan
+Write-Host "Trying latest NumPy..." -ForegroundColor Yellow
+pip install numpy --only-binary :all:
 if ($LASTEXITCODE -ne 0) {
-    Write-Host "WARNING: Pre-built wheel failed, trying regular install..." -ForegroundColor Yellow
-    pip install "numpy>=1.24.3,<1.27.0"
+    Write-Host "WARNING: Latest NumPy failed, trying NumPy 2.x..." -ForegroundColor Yellow
+    pip install "numpy>=2.0.0" --only-binary :all:
     if ($LASTEXITCODE -ne 0) {
-        Write-Host "ERROR: Failed to install numpy" -ForegroundColor Red
-        Write-Host "Try: pip install numpy==1.26.4 --only-binary :all:" -ForegroundColor Yellow
-        Read-Host "Press Enter to exit"
-        exit 1
+        Write-Host "WARNING: NumPy 2.x failed, trying NumPy 1.26.4..." -ForegroundColor Yellow
+        pip install numpy==1.26.4 --only-binary :all:
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "ERROR: All pre-built wheel attempts failed" -ForegroundColor Red
+            Write-Host "Your Python 3.13 may not have pre-built wheels for NumPy 1.x" -ForegroundColor Yellow
+            Write-Host "Solution: Use conda or downgrade to Python 3.11" -ForegroundColor Yellow
+            Write-Host "Try: conda install numpy" -ForegroundColor Yellow
+            Write-Host "Or see PYTHON313_FIX.md for detailed instructions" -ForegroundColor Yellow
+            Read-Host "Press Enter to exit"
+            exit 1
+        }
     }
 }
 
@@ -57,6 +72,13 @@ if ($LASTEXITCODE -ne 0) {
 # Step 5: Install remaining dependencies
 Write-Host ""
 Write-Host "Step 5: Installing remaining dependencies..." -ForegroundColor Yellow
+if (-not (Test-Path "requirements.txt")) {
+    Write-Host "ERROR: requirements.txt not found in current directory" -ForegroundColor Red
+    Write-Host "Current directory: $PWD" -ForegroundColor Yellow
+    Write-Host "Please run this script from the project root directory" -ForegroundColor Yellow
+    Read-Host "Press Enter to exit"
+    exit 1
+}
 pip install -r requirements.txt
 if ($LASTEXITCODE -ne 0) {
     Write-Host "WARNING: Some packages failed to install" -ForegroundColor Yellow

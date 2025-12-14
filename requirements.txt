@@ -9,7 +9,7 @@ youtube-transcript-api==0.6.1
 PyPDF2==3.0.1
 pypdf==3.17.0
 faiss-cpu>=1.9.0
-numpy>=1.24.3,<1.27.0
+numpy>=1.24.3
 python-dotenv==1.0.0
 requests==2.31.0
 gunicorn==21.2.0
